@@ -21,10 +21,10 @@ private:
         }
         return *this;
     }
-    SDLWindow& initWindow(const std::string& name="Game Loop", 
-        const uint& width=800, 
-        const uint& height=600, 
-        const uint& opts=SDL_WINDOW_SHOWN)
+    SDLWindow& initWindow(const std::string& name, 
+        const uint& width, 
+        const uint& height, 
+        const uint& opts)
     {
         this->win = SDL_CreateWindow((const char*)name.c_str(),
             SDL_WINDOWPOS_CENTERED,
@@ -50,22 +50,7 @@ private:
     }
 
 public:
-    SDLWindow(){
-        this->initSDL()
-            .initWindow()
-            .initRenderer();
-    }
-    SDLWindow(std::string& n){
-        this->initSDL()
-            .initWindow(n)
-            .initRenderer();
-    }
-    SDLWindow(const std::string& n, const uint& w, const uint& h){
-        this->initSDL()
-            .initWindow(n, w, h)
-            .initRenderer();
-    }
-    SDLWindow(const std::string& n, const uint& w, const uint& h, const uint& o){
+    SDLWindow(const std::string& n="Game Loop", const uint& w=800, const uint& h=600, const uint& o=SDL_WINDOW_SHOWN){
         this->initSDL()
             .initWindow(n, w, h, o)
             .initRenderer();
