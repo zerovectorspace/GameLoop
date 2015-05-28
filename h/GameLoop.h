@@ -111,6 +111,7 @@ private:
 
 public:
     GameLoop(){
+        this->init();
         this->mainLoop();        
     }
     ~GameLoop(){}
@@ -118,7 +119,9 @@ public:
     float deltaTime = 0;
     float interpolation = 0;
 
-
+    virtual GameLoop& init(){
+        return *this;
+    }
     virtual GameLoop& consoleOutput(){
         //To show what is happening in the terminal
         //this is a timer that shows the number of times our interpolated 
