@@ -7,7 +7,7 @@ class GameLoop{
 private:
     SDL_Event e;
 
-    const int updatesPerSecond = 60;
+    int updatesPerSecond = 60;
     const int singleFrameTimeInMS = 1000 / updatesPerSecond;
     const int maxFrameSkip = 5;
     int loops = 0; 
@@ -111,8 +111,15 @@ private:
 
 public:
     GameLoop(){
-        this->init();
-        this->mainLoop();        
+        this->init()
+            .mainLoop();        
+    }
+    GameLoop(const int& ups){
+        if (ups > 0)
+            updatesPerSecond = ups;
+
+        this->init()
+            .mainLoop();
     }
     ~GameLoop(){}
     
