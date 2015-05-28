@@ -2,6 +2,7 @@
 #define _GAME_LOOP_
 
 #include <iostream>
+#include <string>
 
 class GameLoop{
 private:
@@ -15,6 +16,7 @@ private:
     Uint32 nextFrameTime = 0;
     Uint32 prevFrameTime = 0;
 
+    std::string intpolSpeed = "medium";
     int prevIntpol = -1;
 
     Uint32 timerNow = 0;
@@ -23,6 +25,14 @@ private:
     bool isRunning = true;
     bool isFirstRun = true;
 
+    GameLoop& start(){
+        this->init()
+            .mainLoop();
+    }
+    GameLoop& setUPS(const uint& u){
+        if (u > 0)
+            updatesPerSecond = u;
+    }
     GameLoop& checkForQuit(){
         SDL_PollEvent(&this->e);
         if (this->e.type == SDL_QUIT)
@@ -82,27 +92,33 @@ private:
             //convert that percentage to an integer to make it easy to test
             int ip = int(this->interpolation * 10);
 
-
             //Finally we can draw if the following tests have passed
             //Check against previous interpolation so we don't render
             //the same thing more than once
             //Play around with these to find an ideal interpolation
 
-            //draws on 0% and 50%
-            if ( (ip == 5 || ip == 0) && ip != this->prevIntpol )
-
-            //draws on 0%, 30%, 60%, 90%
-            // if ( (ip == 0 || ip == 3 || ip == 6 || ip == 9) && 
-            //   ip != prevIntpol )
-
-            //draw as fast as our hardware can
-            // if (true)
+            if (intpolSpeed == "slow")
             {
-                //finally do the interpolation calculation
+                if ( (ip == 5 || ip == 0) && ip != this->prevIntpol )
+                {
+                    this->interpolate();
+                    this->prevIntpol = ip;
+                    this->draw();
+                }
+            }
+            else if (intpolSpeed == "medium")
+            {
+                if ( (ip == 0 || ip == 3 || ip == 6 || ip == 9) && ip != prevIntpol )
+                {
+                    this->interpolate();
+                    this->prevIntpol = ip;
+                    this->draw();
+                }
+            }
+            else if (intpolSpeed == "fast")
+            {
                 this->interpolate();
-                //make the interpolation current
                 this->prevIntpol = ip;
-                //Aaaaaand draw!
                 this->draw();
             }
         }
@@ -110,17 +126,14 @@ private:
     }
 
 public:
-    GameLoop(){
-        this->init()
-            .mainLoop();        
-    }
-    GameLoop(const int& ups){
-        if (ups > 0)
-            updatesPerSecond = ups;
+    GameLoop(const uint& ups=60, const std::string& speed="medium"){
+        this->setUPS(ups);
 
-        this->init()
-            .mainLoop();
-    }
+        if (speed == "slow" || speed == "medium" || speed == "fast")
+            this->intpolSpeed = speed;
+
+        this->start();
+    }   
     ~GameLoop(){}
     
     float deltaTime = 0;
