@@ -7,8 +7,6 @@
 
 class GameLoop{
 private:
-    SDL_Event e;
-
     int updatesPerSecond = 60;
     const int singleFrameTimeInMS = 1000 / updatesPerSecond;
     const int maxFrameSkip = 5;
@@ -131,6 +129,8 @@ public:
 
     }   
     virtual ~GameLoop(){}
+    
+    SDL_Event e;
     
     float deltaTime = 0;
     float interpolation = 0;

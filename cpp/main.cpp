@@ -21,7 +21,8 @@ public:
         // (Optional though recommended)
         // I can do whatever I want here. Inputs work well here
             // as it is still the beginning of the loop
-        // Also this is called as fast as your processor can work 
+        // this->e is an SDL_Event that holds all the inputs
+        // This function is called as fast as your processor can work 
         return *this;
     }
     virtual GameLoop& updatePositions(){
