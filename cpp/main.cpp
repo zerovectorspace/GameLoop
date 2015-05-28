@@ -1,7 +1,8 @@
 #include "h/SDLWindow.h"
 #include "h/GameLoop.h"
 
-class myGameLoop: public GameLoop{
+class myGameLoop : GameLoop{
+    using GameLoop::GameLoop;
 public:
     virtual GameLoop& init(){
         // (Optional)
@@ -42,6 +43,6 @@ public:
 int main (int argc, char* argv[])
 {
     SDLWindow win("My Game", 800, 600, SDL_WINDOW_SHOWN);
-    myGameLoop myGame;
+    myGameLoop myGame(30, "slow");
     return 0;
 }   
