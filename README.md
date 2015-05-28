@@ -41,12 +41,20 @@ GameLoop myGame;
 
 // Create a game loop at 30 updatesPerSecond
 GameLoop myGame(30);
+
+// Create a game loop at 30 updatesPerSecond that interpolates at 0%, 30%, 60%, 90%
+    // Second argument values can be: "slow" (0%, 50%), "medium" (0%, 30%, 60%, 90%), "fast" (As fast as possible)
+GameLoop myGame(30, "fast");
 ```
 
 ## GameLoop Overrides
 
 ```C++
 class myGameLoop: public GameLoop{
+    // I must implicitly inherit constructors from GameLoop
+    // If I don't, I can't control updatesPerSecond or Interpolation
+        // Only default constructor will be allowed
+    using GameLoop::GameLoop;
 public:
     virtual GameLoop& init(){
         // (Optional)
@@ -86,3 +94,4 @@ public:
         return *this;
     }
 };
+```
