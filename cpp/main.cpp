@@ -37,7 +37,7 @@ public:
         // (Optional)
         // I should interpolate the animations of my actors here.
 
-        // I should use this->interpolate and this->deltaTime to animate my actors
+        // I should use this->interpolation and this->deltaTime to animate my actors
         return *this;
     }
     virtual GameLoop& draw(){
@@ -49,7 +49,7 @@ public:
 
 int main (int argc, char* argv[])
 {
-    //You can put this in the class that inherits the GameLoop class
+    //I can put this in the class that inherits the GameLoop class
     SDLWindow win("My Game", 800, 600, SDL_WINDOW_SHOWN);
     myGameLoop myGame(30, "slow");
 

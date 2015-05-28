@@ -4,9 +4,9 @@ These are headers to start up a window with SDL2, start a game loop, or both. Yo
 
 ## Prerequisites
 
-*SDL2
-*Bazel (There is a Bazel BUILD file included. It's not needed as you can create your own makefile or use cmake)
-*C++11
+* SDL2
+* Bazel (There is a Bazel BUILD file included. It's not needed as you can create your own makefile or use cmake)
+* C++11
 
 ## Installation
 
@@ -44,7 +44,7 @@ GameLoop myGame(30);
 
 // Create a game loop at 30 updatesPerSecond that interpolates at 0%, 30%, 60%, 90%
     // Second argument values can be: "slow" (0%, 50%), "medium" (0%, 30%, 60%, 90%), "fast" (As fast as possible)
-GameLoop myGame(30, "fast");
+GameLoop myGame(30, "medium");
 ```
 
 ## GameLoop Overrides
@@ -86,7 +86,7 @@ public:
         // (Optional)
         // I should interpolate the animations of my actors here.
 
-        // I should use this->interpolate and this->deltaTime to animate my actors
+        // I should use this->interpolation and this->deltaTime to animate my actors
         return *this;
     }
     virtual GameLoop& draw(){
