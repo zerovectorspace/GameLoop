@@ -21,6 +21,7 @@ private:
     Uint32 drawCount = 0;
 
     bool isRunning = true;
+    bool isFirstRun = true;
 
     GameLoop& checkForQuit(){
         SDL_PollEvent(&this->e);
@@ -42,19 +43,10 @@ private:
     }
     GameLoop& mainLoop()
     {
-        //To show what is happening in the terminal
-        std::cout << "Frames Drawn\tDelta\t\tInterpolation\n";
         //Start the loop while isRunning is true
         while (this->isRunning)
         {
-            //this is a timer that shows the number of times our interpolated 
-            //objects have been drawn every second
-            if (SDL_GetTicks() > timerNow + 1000)
-            {
-                std::cout << drawCount << "\r\t\t" << deltaTime << "\t\t" << interpolation << "\n";
-                drawCount = 0;
-                timerNow = SDL_GetTicks();
-            }
+            this->consoleOutput();
             //This function holds our input handling
             //We can also put this above the updatePositions() call
             //But that slows down the inputs.
@@ -76,19 +68,19 @@ private:
                 this->updatePositions();
 
                 //nextFrameTime is the time in MS we need to pass to update
-                nextFrameTime += singleFrameTimeInMS;
+                this->nextFrameTime += this->singleFrameTimeInMS;
                 //This is the time right now
-                prevFrameTime = SDL_GetTicks();
+                this->prevFrameTime = SDL_GetTicks();
                 //If we are stuck here because the frame rate slows we need to
                 //break out if loops is > maxFrameSkip
                 loops++;
             }
             //This is basically the percentage between frames we currently are
-            interpolation = float( SDL_GetTicks() + singleFrameTimeInMS - nextFrameTime )
-                / float( singleFrameTimeInMS );
+            this->interpolation = float( SDL_GetTicks() + this->singleFrameTimeInMS - this->nextFrameTime )
+                / float( this->singleFrameTimeInMS );
 
             //convert that percentage to an integer to make it easy to test
-            int ip = int(interpolation * 10);
+            int ip = int(this->interpolation * 10);
 
 
             //Finally we can draw if the following tests have passed
@@ -97,7 +89,7 @@ private:
             //Play around with these to find an ideal interpolation
 
             //draws on 0% and 50%
-            if ( (ip == 5 || ip == 0) && ip != prevIntpol )
+            if ( (ip == 5 || ip == 0) && ip != this->prevIntpol )
 
             //draws on 0%, 30%, 60%, 90%
             // if ( (ip == 0 || ip == 3 || ip == 6 || ip == 9) && 
@@ -109,7 +101,7 @@ private:
                 //finally do the interpolation calculation
                 this->interpolate();
                 //make the interpolation current
-                prevIntpol = ip;
+                this->prevIntpol = ip;
                 //Aaaaaand draw!
                 this->draw();
             }
@@ -127,6 +119,23 @@ public:
     float interpolation = 0;
 
 
+    virtual GameLoop& consoleOutput(){
+        //To show what is happening in the terminal
+        //this is a timer that shows the number of times our interpolated 
+        //objects have been drawn every second
+
+        if (SDL_GetTicks() > this->timerNow + 1000)
+        {
+            if (isFirstRun)
+                std::cout << "Frames Drawn\tDelta\t\tInterpolation\n";
+            isFirstRun = false;
+
+            std::cout << this->drawCount << "\t\t" << this->deltaTime << "\t\t" << this->interpolation << "\n";
+            this->drawCount = 0;
+            this->timerNow = SDL_GetTicks();
+        }
+        return *this;
+    }
     virtual GameLoop& inputs(){
         return *this;
     }
