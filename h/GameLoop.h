@@ -1,6 +1,7 @@
 #ifndef _GAME_LOOP_
 #define _GAME_LOOP_
 
+#include <SDL2/SDL.h>
 #include <iostream>
 #include <string>
 
@@ -22,13 +23,9 @@ private:
     Uint32 timerNow = 0;
     Uint32 drawCount = 0;
 
-    bool isRunning = true;
     bool isFirstRun = true;
 
-    GameLoop& start(){
-        this->init()
-            .mainLoop();
-    }
+    
     GameLoop& setUPS(const uint& u){
         if (u > 0)
             updatesPerSecond = u;
@@ -132,13 +129,19 @@ public:
         if (speed == "slow" || speed == "medium" || speed == "fast")
             this->intpolSpeed = speed;
 
-        this->start();
     }   
-    ~GameLoop(){}
+    virtual ~GameLoop(){}
     
     float deltaTime = 0;
     float interpolation = 0;
+    bool isRunning = true;
 
+    virtual GameLoop& start() final{
+        this->init()
+            .mainLoop();
+
+        return *this;
+    }
     virtual GameLoop& init(){
         return *this;
     }
