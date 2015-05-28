@@ -113,8 +113,8 @@ private:
                 //Aaaaaand draw!
                 this->draw();
             }
-
         }
+        return *this;
     }
 
 public:
