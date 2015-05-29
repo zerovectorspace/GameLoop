@@ -30,8 +30,10 @@ SDLWindow myWindow("My Totally Awesome Game");
 SDLWindow myWindow ("My Totally Awesome Game", 640, 480);
 
 //Make a 640x480 window with a name of "My Totally Awesome Game" with an OpenGL Context and no border (It's your responsibility to include opengl and compile/link against it)
-SDLWindow myWindow ("My Totally Awesome Game", 640, 480, SDL_WINDOW_OPENGL||SDL_WINDOW_BORDERLESS);
+SDLWindow myWindow ("My Totally Awesome Game", 640, 480, SDL_WINDOW_OPENGL|SDL_WINDOW_BORDERLESS);
 ```
+
+If the SDL_WINDOW_OPENGL flag is included in the window options an [SDL_GLContext](https://wiki.libsdl.org/SDL_GL_CreateContext) is created for you
 
 ## GameLoop Constructors
 
@@ -42,9 +44,9 @@ GameLoop myGame;
 // Create a game loop at 30 updatesPerSecond
 GameLoop myGame(30);
 
-// Create a game loop at 30 updatesPerSecond that interpolates at 0%, 30%, 60%, 90%
+// Create a game loop at 30 updatesPerSecond that interpolates at 0% and 50%
     // Second argument values can be: "slow" (0%, 50%), "medium" (0%, 30%, 60%, 90%), "fast" (As fast as possible)
-GameLoop myGame(30, "medium");
+GameLoop myGame(30, "slow");
 ```
 
 ## GameLoop Overrides
