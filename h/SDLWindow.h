@@ -10,6 +10,7 @@ class SDLWindow{
 private:
     SDL_Window* win = NULL;
     SDL_Renderer* rend = NULL;
+    SDL_GLContext glContext = NULL;
     SDL_Event e;
     bool isRunning = true;
     std::thread quitEventThread;
@@ -37,7 +38,7 @@ private:
             std::cout << "Could not create Window\n" << SDL_GetError() << "\n";
 
         if ((opts & SDL_WINDOW_OPENGL) == SDL_WINDOW_OPENGL)
-            SDL_GLContext glContext = SDL_GL_CreateContext(win);
+            glContext = SDL_GL_CreateContext(win);
 
         return *this;
     }
@@ -58,6 +59,9 @@ public:
             .initRenderer();
     }
     ~SDLWindow(){
+        if (glContext != NULL)
+            SDL_GL_DeleteContext(glContext);
+        
         SDL_DestroyRenderer(rend);
         SDL_DestroyWindow(win);
         SDL_Quit();
