@@ -24,7 +24,7 @@ private:
     SDLWindow& initWindow(const std::string& name, 
         const uint& width, 
         const uint& height, 
-        const uint& opts)
+        const int& opts)
     {
         this->win = SDL_CreateWindow((const char*)name.c_str(),
             SDL_WINDOWPOS_CENTERED,
@@ -34,9 +34,11 @@ private:
             opts);
 
         if (this->win == NULL)
-        {
             std::cout << "Could not create Window\n" << SDL_GetError() << "\n";
-        }
+
+        if ((opts & SDL_WINDOW_OPENGL) == SDL_WINDOW_OPENGL)
+            SDL_GLContext glContext = SDL_GL_CreateContext(win);
+
         return *this;
     }
     SDLWindow& initRenderer(){
@@ -50,7 +52,7 @@ private:
     }
 
 public:
-    SDLWindow(const std::string& n="Game Loop", const uint& w=800, const uint& h=600, const uint& o=SDL_WINDOW_SHOWN){
+    SDLWindow(const std::string& n="Game Loop", const uint& w=800, const uint& h=600, const int& o=SDL_WINDOW_SHOWN){
         this->initSDL()
             .initWindow(n, w, h, o)
             .initRenderer();
