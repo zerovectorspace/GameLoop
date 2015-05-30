@@ -8,7 +8,6 @@
 
 class SDLWindow{
 private:
-    SDL_Window* win = NULL;
     SDL_Renderer* rend = NULL;
     SDL_GLContext glContext = NULL;
     SDL_Event e;
@@ -66,6 +65,8 @@ public:
         SDL_DestroyWindow(win);
         SDL_Quit();
     }
+
+    SDL_Window* win = NULL;
 };
 
 #endif
