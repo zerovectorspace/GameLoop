@@ -131,12 +131,16 @@ public:
     virtual ~GameLoop(){}
     
     SDL_Event e;
-    
+    SDL_Window* win = NULL;
+
     float deltaTime = 0;
     float interpolation = 0;
     bool isRunning = true;
 
-    virtual GameLoop& start() final{
+    virtual GameLoop& start(SDLWindow& win=NULL) final{
+        if (win.win != NULL)
+            this->win = win.win;
+
         this->init()
             .mainLoop();
 
