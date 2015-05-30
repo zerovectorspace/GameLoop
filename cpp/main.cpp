@@ -43,19 +43,24 @@ public:
     virtual GameLoop& draw(){
         // I should draw everything here.
         // I will definitely put things here or I will see nothing in my window.
+        // If I'm using opengl I need to swap the buffers or I won't see anything
+        SDL_GL_SwapWindow(this->win);
         return *this;
     }
 };
 
 int main (int argc, char* argv[])
 {
-    //I can put this in the class that inherits the GameLoop class
-    SDLWindow win("My Game", 800, 600, SDL_WINDOW_SHOWN);
+    // I can define the window title, width, height, and SDL_WindowFlags
+    // in the SDLWindow constructor
+    SDLWindow win("My Game", 800, 600, SDL_WINDOW_OPENGL|SDL_WINDOW_SHOWN);
     myGameLoop myGame(30, "slow");
 
     // Start off the mainloop.
         // We can't start it automatically in the constructor
         // because the functions won't be overridden. 
-    myGame.start();
+    // I send it the SDLWindow so i can manipulate the window
+    // in my derived myGameLoop class
+    myGame.start(win);
     return 0;
 }   
