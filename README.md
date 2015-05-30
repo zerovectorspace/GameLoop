@@ -94,6 +94,8 @@ public:
     virtual GameLoop& draw(){
         // I should draw everything here.
         // I will definitely put things here or I will see nothing in my window.
+        // If I'm using opengl I need to swap the buffers or I won't see anything
+        SDL_GL_SwapWindow(this->win);
         return *this;
     }
 };
