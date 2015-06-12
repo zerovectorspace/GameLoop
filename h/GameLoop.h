@@ -144,15 +144,21 @@ public:
     float interpolation = 0.0;
     bool isRunning = true;
 
-    virtual GameLoop& start() final{
-        // if (win.win != NULL)
-            // this->win = win.win;
-
+    GameLoop& start(){
         this->init()
             .mainLoop();
 
         return *this;
     }
+    GameLoop& start(SDLWindow& sdlWin){
+        if (sdlWin.win != NULL)
+            this->win = sdlWin.win;
+
+        this->start();
+
+        return *this;
+    }
+    
     virtual GameLoop& init(){
         return *this;
     }
