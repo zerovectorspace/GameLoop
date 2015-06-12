@@ -58,17 +58,17 @@ class myGameLoop: public GameLoop{
         // Only default constructor will be allowed
     using GameLoop::GameLoop;
 public:
-    virtual GameLoop& init(){
+    virtual myGameLoop& init(){
         // (Optional)
         // I can do anything here before the main loop starts
         return *this;
     }
-    virtual GameLoop& consoleOutput(){
+    virtual myGameLoop& consoleOutput(){
         // (Optional)
         // I can do whatever I want here at the beginning of the loop
         return *this;
     }
-    virtual GameLoop& inputs(){
+    virtual myGameLoop& inputs(){
         // (Optional though recommended)
         // I can do whatever I want here. Inputs work well here
             // as it is still the beginning of the loop
@@ -76,7 +76,7 @@ public:
         // This function is called as fast as your processor can work 
         return *this;
     }
-    virtual GameLoop& updatePositions(){
+    virtual myGameLoop& updatePositions(){
         // (Optional though recommended)
         // I should update the position of my actors here.
         // This is only called at updatesPerSecond (default is 60)
@@ -84,14 +84,14 @@ public:
         // I should use this->deltaTime to update my actor positions
         return *this;
     }
-    virtual GameLoop& interpolate(){
+    virtual myGameLoop& interpolate(){
         // (Optional)
         // I should interpolate the animations of my actors here.
 
         // I should use this->interpolation and this->deltaTime to animate my actors
         return *this;
     }
-    virtual GameLoop& draw(){
+    virtual myGameLoop& draw(){
         // I should draw everything here.
         // I will definitely put things here or I will see nothing in my window.
         // If I'm using opengl I need to swap the buffers or I won't see anything
