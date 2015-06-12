@@ -45,7 +45,7 @@ GameLoop myGame;
 GameLoop myGame(30);
 
 // Create a game loop at 30 updatesPerSecond that interpolates at 0% and 50%
-    // Second argument values can be: "slow" (0%, 50%), "medium" (0%, 30%, 60%, 90%), "fast" (As fast as possible)
+    // Second argument values can be: "slow" (0%, 50%), "medium" (0%, 25%, 50%, 75%), "fast" (As fast as possible)
 GameLoop myGame(30, "slow");
 ```
 

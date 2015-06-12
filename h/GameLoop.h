@@ -7,8 +7,8 @@
 
 class GameLoop{
 private:
-    int updatesPerSecond = 60;
-    const int singleFrameTimeInMS = 1000 / updatesPerSecond;
+    int updatesPerSecond = 0;
+    int singleFrameTimeInMS = 0;
     const int maxFrameSkip = 5;
     int loops = 0; 
 
@@ -26,7 +26,11 @@ private:
     
     GameLoop& setUPS(const uint& u){
         if (u > 0)
-            updatesPerSecond = u;
+        {
+            this->updatesPerSecond = u;
+            this->singleFrameTimeInMS = int(1000 / this->updatesPerSecond);
+        }
+        return *this;
     }
     GameLoop& checkForQuit(){
         SDL_PollEvent(&this->e);
@@ -44,6 +48,14 @@ private:
                 SDL_WaitEvent(&f);
             }
         }
+        return *this;
+    }
+    GameLoop& intAndDraw(const int& i)
+    {
+        this->interpolate();
+        this->prevIntpol = i;
+        this->draw();
+        this->drawCount++;
         return *this;
     }
     GameLoop& mainLoop()
@@ -67,7 +79,7 @@ private:
 
             //This loop determines when to update the position
             //This is how we separate the drawing and the position updating
-            while( SDL_GetTicks() > nextFrameTime && loops < maxFrameSkip) 
+            while( SDL_GetTicks() > this->nextFrameTime && this->loops < this->maxFrameSkip) 
             {
                 //Finally update the position of our objects
                 this->updatePositions();
@@ -78,43 +90,38 @@ private:
                 this->prevFrameTime = SDL_GetTicks();
                 //If we are stuck here because the frame rate slows we need to
                 //break out if loops is > maxFrameSkip
-                loops++;
+                this->loops++;
             }
             //This is basically the percentage between frames we currently are
             this->interpolation = float( SDL_GetTicks() + this->singleFrameTimeInMS - this->nextFrameTime )
                 / float( this->singleFrameTimeInMS );
 
             //convert that percentage to an integer to make it easy to test
-            int ip = int(this->interpolation * 10);
+            int ip = int(this->interpolation * 100);
 
+            if (ip < 10)
+                ip = 0;
             //Finally we can draw if the following tests have passed
             //Check against previous interpolation so we don't render
             //the same thing more than once
             //Play around with these to find an ideal interpolation
-
-            if (intpolSpeed == "slow")
+            if (this->intpolSpeed == "slow")
             {
-                if ( (ip == 5 || ip == 0) && ip != this->prevIntpol )
+                if ( (ip == 0 || ip == 50) && ip != this->prevIntpol )
                 {
-                    this->interpolate();
-                    this->prevIntpol = ip;
-                    this->draw();
+                    this->intAndDraw(ip);
                 }
             }
-            else if (intpolSpeed == "medium")
+            else if (this->intpolSpeed == "medium")
             {
-                if ( (ip == 0 || ip == 3 || ip == 6 || ip == 9) && ip != prevIntpol )
+                if ( (ip == 0 || ip == 25 || ip == 50 || ip == 75) && ip != this->prevIntpol )
                 {
-                    this->interpolate();
-                    this->prevIntpol = ip;
-                    this->draw();
+                    this->intAndDraw(ip);
                 }
             }
             else if (intpolSpeed == "fast")
             {
-                this->interpolate();
-                this->prevIntpol = ip;
-                this->draw();
+                this->intAndDraw(ip);
             }
         }
         return *this;
@@ -133,13 +140,13 @@ public:
     SDL_Event e;
     SDL_Window* win = NULL;
 
-    float deltaTime = 0;
-    float interpolation = 0;
+    float deltaTime = 0.0;
+    float interpolation = 0.0;
     bool isRunning = true;
 
-    virtual GameLoop& start(SDLWindow& win=NULL) final{
-        if (win.win != NULL)
-            this->win = win.win;
+    virtual GameLoop& start() final{
+        // if (win.win != NULL)
+            // this->win = win.win;
 
         this->init()
             .mainLoop();
@@ -156,9 +163,9 @@ public:
 
         if (SDL_GetTicks() > this->timerNow + 1000)
         {
-            if (isFirstRun)
+            if (this->isFirstRun)
                 std::cout << "Frames Drawn\tDelta\t\tInterpolation\n";
-            isFirstRun = false;
+            this->isFirstRun = false;
 
             std::cout << this->drawCount << "\t\t" << this->deltaTime << "\t\t" << this->interpolation << "\n";
             this->drawCount = 0;
