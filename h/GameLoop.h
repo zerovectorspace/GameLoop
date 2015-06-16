@@ -7,7 +7,7 @@
 
 class GameLoop{
 private:
-    int updatesPerSecond = 0;
+    int updatesPerSecond = 60;
     int singleFrameTimeInMS = 0;
     const int maxFrameSkip = 5;
     int loops = 0; 
