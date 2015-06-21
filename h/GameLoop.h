@@ -56,9 +56,9 @@ private:
     }
     GameLoop& intAndDraw(const int& i)
     {
-        this->interpolate();
+        this->interpolate()
+            .draw();
         this->prevIntpol = i;
-        this->draw();
         this->drawCount++;
         return *this;
     }
@@ -73,8 +73,8 @@ private:
             //But that slows down the inputs.
             while (SDL_PollEvent(&this->e))
             {
-                this->checkForQuit();
-                this->inputs();
+                this->checkForQuit()
+                    .inputs();
             }
 
             //loops is the number of time we have skipped frames
@@ -114,15 +114,14 @@ private:
             //Play around with these to find an ideal interpolation
             if (this->intpolSpeed == "slow")
             {
-                if ( (ip == 0 || ip == 50) && ip != this->prevIntpol )
+                if ( ip != this->prevIntpol && (ip == 0 || ip == 50) )
                 {
                     this->intAndDraw(ip);
                 }
             }
             else if (this->intpolSpeed == "medium")
             {
-                if ( (ip == 0 || ip == 25 || ip == 50 || ip == 75) && ip != this->prevIntpol )
-                {
+                if ( ip != this->prevIntpol && (ip == 0 || ip == 25 || ip == 50 || ip == 75) ) {
                     this->intAndDraw(ip);
                 }
             }
