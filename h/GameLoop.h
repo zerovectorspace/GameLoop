@@ -116,18 +116,18 @@ private:
             //Check against previous interpolation so we don't render
             //the same thing more than once
             //Play around with these to find an ideal interpolation
-            if (this->intpolSpeed == "slow")
+            if ( (this->intpolSpeed == "slow" || this->intpolSpeed == "off") &&
+                (ip != this->prevIntpol && (ip == 0 || ip == 50)) )
             {
-                if ( ip != this->prevIntpol && (ip == 0 || ip == 50) )
-                {
+                if (ip == 50 && this->intpolSpeed == "off")
+                    this->prevIntpol = ip;
+                else
                     this->intAndDraw(ip);
-                }
             }
-            else if (this->intpolSpeed == "medium")
+            else if ( (this->intpolSpeed == "medium") &&
+                (ip != this->prevIntpol && (ip == 0 || ip == 25 || ip == 50 || ip == 75)) )
             {
-                if ( ip != this->prevIntpol && (ip == 0 || ip == 25 || ip == 50 || ip == 75) ) {
-                    this->intAndDraw(ip);
-                }
+                this->intAndDraw(ip);
             }
             else if (intpolSpeed == "fast")
             {
@@ -141,7 +141,7 @@ public:
     GameLoop(const uint& ups=60, const std::string& speed="medium"){
         this->setUPS(ups);
 
-        if (speed == "slow" || speed == "medium" || speed == "fast")
+        if (speed == "off" || speed == "slow" || speed == "medium" || speed == "fast")
             this->intpolSpeed = speed;
 
     }   
