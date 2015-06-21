@@ -33,19 +33,23 @@ private:
         return *this;
     }
     GameLoop& checkForQuit(){
-        SDL_PollEvent(&this->e);
-        if (this->e.type == SDL_QUIT)
+        switch (this->e.type)
         {
-            isRunning = false;
-        }
-        else if (this->e.type == SDL_WINDOWEVENT)
-        {
-            if (this->e.window.event == SDL_WINDOWEVENT_FOCUS_LOST)
+            case SDL_QUIT:
             {
-                SDL_Event f;
-                f.type = SDL_WINDOWEVENT;
-                f.window.event = SDL_WINDOWEVENT_FOCUS_GAINED;
-                SDL_WaitEvent(&f);
+                isRunning = false;
+                break;
+            }
+            case SDL_WINDOWEVENT:
+            {
+                if (this->e.window.event == SDL_WINDOWEVENT_FOCUS_LOST)
+                {
+                    SDL_Event f;
+                    f.type = SDL_WINDOWEVENT;
+                    f.window.event = SDL_WINDOWEVENT_FOCUS_GAINED;
+                    SDL_WaitEvent(&f);
+                }
+                break;
             }
         }
         return *this;
@@ -67,8 +71,11 @@ private:
             //This function holds our input handling
             //We can also put this above the updatePositions() call
             //But that slows down the inputs.
-            this->checkForQuit();
-            this->inputs();
+            while (SDL_PollEvent(&this->e))
+            {
+                this->checkForQuit();
+                this->inputs();
+            }
 
             //loops is the number of time we have skipped frames
             this->loops = 0;

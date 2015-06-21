@@ -21,8 +21,15 @@ public:
         // (Optional though recommended)
         // I can do whatever I want here. Inputs work well here
             // as it is still the beginning of the loop
-        // this->e is an SDL_Event that holds all the inputs
-        // This function is called as fast as your processor can work 
+        // this->e is an SDL_Event
+        // This function is called as fast as your processor can work
+        // This function is called for every single event until the
+            // event queue is empty
+        switch (this->e.type) {
+            case SDL_KEYDOWN: {
+                std::cout << "Key: " << this->e.key.keysym.scancode << "\n";
+            }
+        }
         return *this;
     }
     virtual myGameLoop& updatePositions(){
