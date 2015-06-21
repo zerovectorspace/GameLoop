@@ -15,6 +15,7 @@ public:
     virtual myGameLoop& consoleOutput(){
         // (Optional)
         // I can do whatever I want here at the beginning of the loop
+        GameLoop::consoleOutput();
         return *this;
     }
     virtual myGameLoop& inputs(){
