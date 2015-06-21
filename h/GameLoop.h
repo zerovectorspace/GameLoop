@@ -28,6 +28,10 @@ private:
         if (u > 0)
         {
             this->updatesPerSecond = u;
+            
+            if (u % 2 == 0)
+                this->updatesPerSecond--;
+
             this->singleFrameTimeInMS = int(1000 / this->updatesPerSecond);
         }
         return *this;
