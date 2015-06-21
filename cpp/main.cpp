@@ -63,7 +63,7 @@ int main (int argc, char* argv[])
     // I can define the window title, width, height, and SDL_WindowFlags
     // in the SDLWindow constructor
     SDLWindow win("My Game", 800, 600, SDL_WINDOW_OPENGL|SDL_WINDOW_SHOWN);
-    myGameLoop myGame(30, "slow");
+    myGameLoop myGame(30, "medium");
 
     // Start off the mainloop.
         // We can't start it automatically in the constructor
