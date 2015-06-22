@@ -25,7 +25,7 @@ private:
 
     
     GameLoop& setUPS(const uint& u){
-        if (u > 0)
+        if (u > 0 && u <= 240)
         {
             this->updatesPerSecond = u;
             
