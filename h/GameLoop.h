@@ -71,6 +71,7 @@ private:
         //Start the loop while isRunning is true
         while (this->isRunning)
         {
+            this->now = SDL_GetTicks() / 1000.0f;
             this->consoleOutput();
             //This function holds our input handling
             //We can also put this above the updatePositions() call
@@ -150,6 +151,7 @@ public:
     SDL_Event e;
     SDL_Window* win = NULL;
 
+    float now = 0.0;
     float deltaTime = 0.0;
     float interpolation = 0.0;
     bool isRunning = true;
