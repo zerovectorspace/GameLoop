@@ -28,8 +28,11 @@ public:
             // event queue is empty
         switch (this->e.type) {
             case SDL_KEYDOWN: {
-                std::cout << "Key Code: " << this->e.key.keysym.scancode << "\t" <<
-                    "Name: " << SDL_GetScancodeName(this->e.key.keysym.scancode) << "\n";
+                if (!this->e.key.repeat)
+                    std::cout << "Key Code: " << this->e.key.keysym.scancode << "\t" <<
+                        "Name: " << SDL_GetScancodeName(this->e.key.keysym.scancode) << "\n";
+
+                break;
             }
         }
         return *this;
