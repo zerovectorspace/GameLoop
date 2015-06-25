@@ -66,14 +66,26 @@ public:
     virtual myGameLoop& consoleOutput(){
         // (Optional)
         // I can do whatever I want here at the beginning of the loop
+        GameLoop::consoleOutput();
         return *this;
     }
     virtual myGameLoop& inputs(){
         // (Optional though recommended)
         // I can do whatever I want here. Inputs work well here
             // as it is still the beginning of the loop
-        // this->e is an SDL_Event that holds all the inputs
-        // This function is called as fast as your processor can work 
+        // this->e is an SDL_Event
+        // This function is called as fast as your processor can work
+        // This function is called for every single event until the
+            // event queue is empty
+        switch (this->e.type) {
+            case SDL_KEYDOWN: {
+                if (!this->e.key.repeat)
+                    std::cout << "Key Code: " << this->e.key.keysym.scancode << "\t" <<
+                        "Name: " << SDL_GetScancodeName(this->e.key.keysym.scancode) << "\n";
+
+                break;
+            }
+        }
         return *this;
     }
     virtual myGameLoop& updatePositions(){
@@ -82,6 +94,14 @@ public:
         // This is only called at updatesPerSecond (default is 60)
 
         // I should use this->deltaTime to update my actor positions
+        return *this;
+    }
+    virtual myGameLoop& collisions(){
+        // (Optional though recommended)
+        // I should check for any collisions here
+        // This is only called at updatesPerSecond (default is 60)
+        // This is called directly after this->updatePositions()
+
         return *this;
     }
     virtual myGameLoop& interpolate(){

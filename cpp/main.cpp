@@ -45,6 +45,14 @@ public:
         // I should use this->deltaTime to update my actor positions
         return *this;
     }
+    virtual myGameLoop& collisions(){
+        // (Optional though recommended)
+        // I should check for any collisions here
+        // This is only called at updatesPerSecond (default is 60)
+        // This is called directly after this->updatePositions()
+
+        return *this;
+    }
     virtual myGameLoop& interpolate(){
         // (Optional)
         // I should interpolate the animations of my actors here.

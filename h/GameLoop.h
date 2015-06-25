@@ -79,7 +79,8 @@ private:
             while (SDL_PollEvent(&this->e))
             {
                 this->checkForQuit()
-                    .inputs();
+                    .inputs()
+                    .collisions();
             }
 
             //loops is the number of time we have skipped frames
@@ -192,6 +193,9 @@ public:
         return *this;
     }
     virtual GameLoop& inputs(){
+        return *this;
+    }
+    virtual GameLoop& collisions(){
         return *this;
     }
     virtual GameLoop& updatePositions(){
