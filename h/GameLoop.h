@@ -18,7 +18,7 @@ private:
     std::string intpolSpeed = "medium";
     int prevIntpol = -1;
 
-    Uint32 timerNow = 0;
+    Uint32 secondTimer = 0;
     Uint32 drawCount = 0;
 
     bool isFirstRun = true;
@@ -63,7 +63,7 @@ private:
     	// a way to allow us to specify the velocity of our 
     	//objects in pixels per second. This keeps the animation distance
     	//constant when the frame rate changes
-    	this->deltaTime = float(SDL_GetTicks() - this->prevFrameTime) / 1000.0f;
+    	this->deltaTime = float(this->now - this->prevFrameTime) / 1000.0f;
     	return *this;
     }
     GameLoop& intAndDraw(const int& i)
@@ -80,7 +80,7 @@ private:
         //Start the loop while isRunning is true
         while (this->isRunning)
         {
-            this->now = SDL_GetTicks() / 1000.0f;
+            this->now = SDL_GetTicks();
             this->consoleOutput();
             //This function holds our input handling
             //We can also put this above the updatePositions() call
@@ -95,7 +95,7 @@ private:
             this->loops = 0;
             //This loop determines when to update the position
             //This is how we separate the drawing and the position updating
-            while( SDL_GetTicks() > this->nextFrameTime && this->loops < this->maxFrameSkip) 
+            while( this->now > this->nextFrameTime && this->loops < this->maxFrameSkip) 
             {
                 //Finally update the position of our objects
                 this->calcDeltaTime()
@@ -105,13 +105,13 @@ private:
                 //nextFrameTime is the time in MS we need to pass to update
                 this->nextFrameTime += this->singleFrameTimeInMS;
                 //This is the time right now
-                this->prevFrameTime = SDL_GetTicks();
+                this->prevFrameTime = this->now;
                 //If we are stuck here because the frame rate slows we need to
                 //break out if loops is > maxFrameSkip
                 this->loops++;
             }
             //This is basically the percentage between frames we currently are
-            this->interpolation = float( SDL_GetTicks() + this->singleFrameTimeInMS - this->nextFrameTime )
+            this->interpolation = float( this->now + this->singleFrameTimeInMS - this->nextFrameTime )
                 / float( this->singleFrameTimeInMS );
 
             //convert that percentage to an integer to make it easy to test
@@ -157,7 +157,7 @@ public:
     SDL_Event e;
     SDL_Window* win = NULL;
 
-    float now = 0.0;
+    Uint32 now = 0;
     float deltaTime = 0.0;
     float interpolation = 0.0;
     bool isRunning = true;
@@ -185,7 +185,7 @@ public:
         //this is a timer that shows the number of times our interpolated 
         //objects have been drawn every second
 
-        if (SDL_GetTicks() > this->timerNow + 1000)
+        if (this->now > this->secondTimer + 1000)
         {
             if (this->isFirstRun)
                 std::cout << "Frames Drawn\tDelta\t\tInterpolation\n";
@@ -193,7 +193,7 @@ public:
 
             std::cout << this->drawCount << "\t\t" << this->deltaTime << "\t\t" << this->interpolation << "\n";
             this->drawCount = 0;
-            this->timerNow = SDL_GetTicks();
+            this->secondTimer = this->now;
         }
         return *this;
     }
