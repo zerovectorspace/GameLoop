@@ -58,9 +58,18 @@ private:
         }
         return *this;
     }
+    GameLoop& calcDeltaTime()
+    {
+    	// a way to allow us to specify the velocity of our 
+    	//objects in pixels per second. This keeps the animation distance
+    	//constant when the frame rate changes
+    	this->deltaTime = float(SDL_GetTicks() - this->prevFrameTime) / 1000.0f;
+    	return *this;
+    }
     GameLoop& intAndDraw(const int& i)
     {
-        this->interpolate()
+        this->calcDeltaTime()
+        	.interpolate()
             .draw();
         this->prevIntpol = i;
         this->drawCount++;
@@ -85,17 +94,13 @@ private:
 
             //loops is the number of time we have skipped frames
             this->loops = 0;
-            // a way to allow us to specify the velocity of our 
-            //objects in pixels per second. This keeps the animation distance
-            //constant when the frame rate changes
-            this->deltaTime = float(SDL_GetTicks() - this->prevFrameTime) / 1000.0f;
-
             //This loop determines when to update the position
             //This is how we separate the drawing and the position updating
             while( SDL_GetTicks() > this->nextFrameTime && this->loops < this->maxFrameSkip) 
             {
                 //Finally update the position of our objects
-                this->updatePositions();
+                this->calcDeltaTime()
+                	.updatePositions();
 
                 //nextFrameTime is the time in MS we need to pass to update
                 this->nextFrameTime += this->singleFrameTimeInMS;
