@@ -88,8 +88,7 @@ private:
             while (SDL_PollEvent(&this->e))
             {
                 this->checkForQuit()
-                    .inputs()
-                    .collisions();
+                    .inputs();
             }
 
             //loops is the number of time we have skipped frames
@@ -100,7 +99,8 @@ private:
             {
                 //Finally update the position of our objects
                 this->calcDeltaTime()
-                	.updatePositions();
+                	.updatePositions()
+                	.collisions();
 
                 //nextFrameTime is the time in MS we need to pass to update
                 this->nextFrameTime += this->singleFrameTimeInMS;
