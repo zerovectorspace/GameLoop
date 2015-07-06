@@ -30,10 +30,10 @@ cc_binary(
         linkopts = ["-lSDL2"]
 
         # Link against SDL2 and OpenGL
-        #linkopts = ["-lSDL2", "-lGL", "-lGLEW"]
+        #linkopts = ["-lSDL2", "-lGL", "-lm"]
 
-        # Link again SDL2, OpenGL and the helpfup GLEW Library
-        #linkopts = ["-lSDL2", "-lGL", "-lGLEW"]
+        # Link against SDL2, OpenGL and the helpful GLEW Library
+        #linkopts = ["-lSDL2", "-lGL", "-lGLEW", "-lm"]
  )
 
 filegroup(
