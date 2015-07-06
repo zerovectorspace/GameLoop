@@ -7,18 +7,18 @@ class myGameLoop: public GameLoop{
         // Only default constructor will be allowed
     using GameLoop::GameLoop;
 public:
-    virtual myGameLoop& init(){
+    myGameLoop& init() override {
         // (Optional)
         // I can do anything here before the main loop starts
         return *this;
     }
-    virtual myGameLoop& consoleOutput(){
+    myGameLoop& consoleOutput() override {
         // (Optional)
         // I can do whatever I want here at the beginning of the loop
         GameLoop::consoleOutput();
         return *this;
     }
-    virtual myGameLoop& inputs(){
+    myGameLoop& inputs() override {
         // (Optional though recommended)
         // I can do whatever I want here. Inputs work well here
             // as it is still the beginning of the loop
@@ -37,7 +37,7 @@ public:
         }
         return *this;
     }
-    virtual myGameLoop& updatePositions(){
+    myGameLoop& updatePositions() override {
         // (Optional though recommended)
         // I should update the position of my actors here.
         // This is only called at updatesPerSecond (default is 60)
@@ -45,7 +45,7 @@ public:
         // I should use this->deltaTime to update my actor positions
         return *this;
     }
-    virtual myGameLoop& collisions(){
+    myGameLoop& collisions() override {
         // (Optional though recommended)
         // I should check for any collisions here
         // This is only called at updatesPerSecond (default is 60)
@@ -53,14 +53,14 @@ public:
 
         return *this;
     }
-    virtual myGameLoop& interpolate(){
+    myGameLoop& interpolate() override {
         // (Optional)
         // I should interpolate the animations of my actors here.
 
         // I should use this->interpolation and this->deltaTime to animate my actors
         return *this;
     }
-    virtual myGameLoop& draw(){
+    myGameLoop& draw() override {
         // I should draw everything here.
         // I will definitely put things here or I will see nothing in my window.
         // If I'm using opengl I need to swap the buffers or I won't see anything
