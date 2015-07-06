@@ -1,6 +1,10 @@
 #include "h/SDLWindow.h"
 #include "h/GameLoop.h"
 
+// #include <GL/glew.h>
+// #include <glm/glm.hpp>
+// #include <glm/ext.hpp>
+
 class myGameLoop: public GameLoop{
     // I must implicitly inherit constructors from GameLoop
     // If I don't, I can't control updatesPerSecond or Interpolation
@@ -74,6 +78,12 @@ int main (int argc, char* argv[])
     // I can define the window title, width, height, and SDL_WindowFlags
     // in the SDLWindow constructor
     SDLWindow win("My Game", 800, 600, SDL_WINDOW_OPENGL|SDL_WINDOW_SHOWN);
+
+    // Here is a good place to intialize GLEW; just after the context has been
+	// attached to the window
+    // glewExperimental = GL_TRUE;
+    // glewInit();
+
     myGameLoop myGame(30, "medium");
 
     // Start off the mainloop.
