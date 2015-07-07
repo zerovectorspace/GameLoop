@@ -32,7 +32,7 @@ private:
             if (u % 2 == 0)
                 this->updatesPerSecond--;
 
-            this->singleFrameTimeInMS = int(1000 / this->updatesPerSecond);
+            this->singleFrameTimeInMS = static_cast<int>(1000 / this->updatesPerSecond);
         }
         return *this;
     }
@@ -63,7 +63,7 @@ private:
     	// a way to allow us to specify the velocity of our 
     	//objects in pixels per second. This keeps the animation distance
     	//constant when the frame rate changes
-    	this->deltaTime = float(this->now - this->prevFrameTime) / 1000.0f;
+    	this->deltaTime = static_cast<float>((this->now - this->prevFrameTime) / 1000.0f);
     	return *this;
     }
     GameLoop& intAndDraw(const int& i)
@@ -111,11 +111,11 @@ private:
                 this->loops++;
             }
             //This is basically the percentage between frames we currently are
-            this->interpolation = float( this->now + this->singleFrameTimeInMS - this->nextFrameTime )
-                / float( this->singleFrameTimeInMS );
+            this->interpolation = static_cast<float>( this->now + this->singleFrameTimeInMS - this->nextFrameTime )
+                / static_cast<float>( this->singleFrameTimeInMS );
 
             //convert that percentage to an integer to make it easy to test
-            int ip = int(this->interpolation * 100);
+            int ip = static_cast<int>(this->interpolation * 100);
 
             if (ip < 10)
                 ip = 0;
