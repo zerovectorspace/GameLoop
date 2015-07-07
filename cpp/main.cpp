@@ -16,11 +16,11 @@ public:
         // I can do anything here before the main loop starts
         return *this;
     }
-    myGameLoop& consoleOutput() override {
-        // (Optional)
-        // I can do whatever I want here at the beginning of the loop
-        GameLoop::consoleOutput();
-        return *this;
+    myGameLoop& secondTimer() override {
+    	// (Optional)
+    	// This function is called every second
+    	this->consoleOutput();
+    	return *this;
     }
     myGameLoop& inputs() override {
         // (Optional though recommended)

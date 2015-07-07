@@ -18,7 +18,7 @@ private:
     std::string intpolSpeed = "medium";
     int prevIntpol = -1;
 
-    Uint32 secondTimer = 0;
+    Uint32 oneSecond = 0;
     Uint32 drawCount = 0;
 
     bool isFirstRun = true;
@@ -58,6 +58,15 @@ private:
         }
         return *this;
     }
+    GameLoop& secondTimerMaster(){
+        // If one second has passed
+        if (this->now > this->oneSecond + 1000)
+        {
+            this->secondTimer();
+            this->oneSecond = this->now;
+        }
+    	return *this;
+    }
     GameLoop& calcDeltaTime()
     {
     	// a way to allow us to specify the velocity of our 
@@ -81,7 +90,6 @@ private:
         while (this->isRunning)
         {
             this->now = SDL_GetTicks();
-            this->consoleOutput();
             //This function holds our input handling
             //We can also put this above the updatePositions() call
             //But that slows down the inputs.
@@ -100,7 +108,8 @@ private:
                 //Finally update the position of our objects
                 this->calcDeltaTime()
                 	.updatePositions()
-                	.collisions();
+                	.collisions()
+                	.secondTimerMaster();
 
                 //nextFrameTime is the time in MS we need to pass to update
                 this->nextFrameTime += this->singleFrameTimeInMS;
@@ -180,21 +189,24 @@ public:
     virtual GameLoop& init(){
         return *this;
     }
+    virtual GameLoop& secondTimer(){
+    	// This function is called every second
+    	this->consoleOutput();
+    	return *this;
+    }
     virtual GameLoop& consoleOutput(){
         //To show what is happening in the terminal
-        //this is a timer that shows the number of times our interpolated 
-        //objects have been drawn every second
-
-        if (this->now > this->secondTimer + 1000)
+        //shows the number of times our interpolated 
+        //objects have been drawn, this is called every second
+        if (this->isFirstRun)
         {
-            if (this->isFirstRun)
-                std::cout << "Frames Drawn\tDelta\t\tInterpolation\n";
+            std::cout << "Time Passed\tFrames Drawn\tFrame Skipped\n";
             this->isFirstRun = false;
-
-            std::cout << this->drawCount << "\t\t" << this->deltaTime << "\t\t" << this->interpolation << "\n";
-            this->drawCount = 0;
-            this->secondTimer = this->now;
         }
+
+        std::cout << this->now/1000 << "\t\t" << this->drawCount << "\t\t" << this->loops << "\n";
+        this->drawCount = 0;
+
         return *this;
     }
     virtual GameLoop& inputs(){
