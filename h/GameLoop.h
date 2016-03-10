@@ -24,7 +24,7 @@ private:
     bool isFirstRun = true;
 
     
-    GameLoop& setUPS(const uint& u){
+    auto& setUPS(const uint& u){
         if (u > 0 && u <= 240)
         {
             this->updatesPerSecond = u;
@@ -36,7 +36,7 @@ private:
         }
         return *this;
     }
-    GameLoop& checkForQuit(){
+    auto& checkForQuit(){
         switch (this->e.type)
         {
             case SDL_QUIT:
@@ -58,7 +58,7 @@ private:
         }
         return *this;
     }
-    GameLoop& secondTimerMaster(){
+    auto& secondTimerMaster(){
         // If one second has passed
         if (this->now > this->oneSecond + 1000)
         {
@@ -67,7 +67,7 @@ private:
         }
     	return *this;
     }
-    GameLoop& calcDeltaTime()
+    auto& calcDeltaTime()
     {
     	// a way to allow us to specify the velocity of our 
     	//objects in pixels per second. This keeps the animation distance
@@ -75,7 +75,7 @@ private:
     	this->deltaTime = static_cast<float>((this->now - this->prevFrameTime) / 1000.0f);
     	return *this;
     }
-    GameLoop& intAndDraw(const int& i)
+    auto& intAndDraw(const int& i)
     {
         this->calcDeltaTime()
         	.interpolate()
@@ -84,7 +84,7 @@ private:
         this->drawCount++;
         return *this;
     }
-    GameLoop& mainLoop()
+    auto& mainLoop()
     {
         //Start the loop while isRunning is true
         while (this->isRunning)
@@ -171,13 +171,13 @@ public:
     float interpolation = 0.0;
     bool isRunning = true;
 
-    GameLoop& start(){
+    auto& start(){
         this->init()
             .mainLoop();
 
         return *this;
     }
-    GameLoop& start(SDLWindow& sdlWin){
+    auto& start(SDLWindow& sdlWin){
         if (sdlWin.win != NULL)
             this->win = sdlWin.win;
 
