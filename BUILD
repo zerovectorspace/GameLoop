@@ -17,12 +17,8 @@ cc_binary(
 
     ## COMPILER ##
 
-        # Compile with C++11 flag
-        copts = ["-std=c++11"],
-
         # Compile with C++14 flag
-        #copts = ["-std=c++14"],
-
+        copts = ["-std=c++14", "-fmax-errors=1", "-O1"],
 
     ## LINKING ##
 
