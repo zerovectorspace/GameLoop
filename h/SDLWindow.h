@@ -4,24 +4,21 @@
 #include <SDL2/SDL.h>
 #include <iostream>
 #include <string>
-#include <thread>
 
 class SDLWindow{
 private:
-    SDL_Renderer* rend = NULL;
-    SDL_GLContext glContext = NULL;
+    SDL_Renderer* rend = nullptr;
+    SDL_GLContext glContext = nullptr;
     SDL_Event e;
     bool isRunning = true;
-    std::thread quitEventThread;
 
-    SDLWindow& initSDL(){
+    auto& initSDL(){
         if (SDL_Init(SDL_INIT_EVERYTHING) != 0)
-        {
           std::cout << "could not initialize SDL2 \n" << SDL_GetError() << "\n";
-        }
+
         return *this;
     }
-    SDLWindow& initWindow(const std::string& name, 
+    auto& initWindow(const std::string& name, 
         const uint& width, 
         const uint& height, 
         const int& opts)
@@ -33,7 +30,7 @@ private:
             height,
             opts);
 
-        if (this->win == NULL)
+        if (this->win == nullptr)
             std::cout << "Could not create Window\n" << SDL_GetError() << "\n";
 
         if ((opts & SDL_WINDOW_OPENGL) == SDL_WINDOW_OPENGL)
@@ -41,13 +38,12 @@ private:
 
         return *this;
     }
-    SDLWindow& initRenderer(){
+    auto& initRenderer(){
         this->rend = SDL_CreateRenderer(win, -1, SDL_RENDERER_ACCELERATED||SDL_RENDERER_PRESENTVSYNC);
 
-        if (this->rend == NULL)
-        {
+        if (this->rend == nullptr)
             std::cout << "Could not create Renderer\n" << SDL_GetError() << "\n";
-        }
+
         return *this;
     }
 
@@ -58,7 +54,7 @@ public:
             .initRenderer();
     }
     ~SDLWindow(){
-        if (glContext != NULL)
+        if (glContext != nullptr)
             SDL_GL_DeleteContext(glContext);
         
         SDL_DestroyRenderer(rend);
@@ -66,7 +62,7 @@ public:
         SDL_Quit();
     }
 
-    SDL_Window* win = NULL;
+    SDL_Window* win = nullptr;
 };
 
 #endif
