@@ -6,7 +6,7 @@ These are headers to start up a window with SDL2, start a game loop, or both. Yo
 
 * SDL2
 * Bazel (There is a Bazel BUILD file included. It's not needed as you can create your own makefile or use cmake)
-* C++11
+* C++14
 
 ## Installation
 
