@@ -27,17 +27,17 @@ private:
     auto& setUPS(const uint& u){
         if (u > 0 && u <= 240)
         {
-            this->updatesPerSecond = u;
+            updatesPerSecond = u;
             
             if (u % 2 == 0)
-                this->updatesPerSecond--;
+                updatesPerSecond--;
 
-            this->singleFrameTimeInMS = static_cast<int>(1000 / this->updatesPerSecond);
+            singleFrameTimeInMS = static_cast<int>(1000 / updatesPerSecond);
         }
         return *this;
     }
     auto& checkForQuit(){
-        switch (this->e.type)
+        switch (e.type)
         {
             case SDL_QUIT:
             {
@@ -46,7 +46,7 @@ private:
             }
             case SDL_WINDOWEVENT:
             {
-                if (this->e.window.event == SDL_WINDOWEVENT_FOCUS_LOST)
+                if (e.window.event == SDL_WINDOWEVENT_FOCUS_LOST)
                 {
                     SDL_Event f;
                     f.type = SDL_WINDOWEVENT;
@@ -60,10 +60,10 @@ private:
     }
     auto& secondTimerMaster(){
         // If one second has passed
-        if (this->now > this->oneSecond + 1000)
+        if (now > oneSecond + 1000)
         {
-            this->secondTimer();
-            this->oneSecond = this->now;
+            secondTimer();
+            oneSecond = now;
         }
     	return *this;
     }
@@ -72,59 +72,59 @@ private:
     	// a way to allow us to specify the velocity of our 
     	//objects in pixels per second. This keeps the animation distance
     	//constant when the frame rate changes
-    	this->deltaTime = static_cast<float>((this->now - this->prevFrameTime) / 1000.0f);
+    	deltaTime = static_cast<float>((now - prevFrameTime) / 1000.0f);
     	return *this;
     }
     auto& intAndDraw(const int& i)
     {
-        this->calcDeltaTime()
+        calcDeltaTime()
         	.interpolate()
             .draw();
-        this->prevIntpol = i;
-        this->drawCount++;
+        prevIntpol = i;
+        drawCount++;
         return *this;
     }
     auto& mainLoop()
     {
         //Start the loop while isRunning is true
-        while (this->isRunning)
+        while (isRunning)
         {
-            this->now = SDL_GetTicks();
+            now = SDL_GetTicks();
             //This function holds our input handling
             //We can also put this above the updatePositions() call
             //But that slows down the inputs.
-            while (SDL_PollEvent(&this->e))
+            while (SDL_PollEvent(&e))
             {
-                this->checkForQuit()
+                checkForQuit()
                     .inputs();
             }
 
             //loops is the number of time we have skipped frames
-            this->loops = 0;
+            loops = 0;
             //This loop determines when to update the position
             //This is how we separate the drawing and the position updating
-            while( this->now > this->nextFrameTime && this->loops < this->maxFrameSkip) 
+            while( now > nextFrameTime && loops < maxFrameSkip) 
             {
                 //Finally update the position of our objects
-                this->calcDeltaTime()
+                calcDeltaTime()
                 	.updatePositions()
                 	.collisions()
                 	.secondTimerMaster();
 
                 //nextFrameTime is the time in MS we need to pass to update
-                this->nextFrameTime += this->singleFrameTimeInMS;
+                nextFrameTime += singleFrameTimeInMS;
                 //This is the time right now
-                this->prevFrameTime = this->now;
+                prevFrameTime = now;
                 //If we are stuck here because the frame rate slows we need to
                 //break out if loops is > maxFrameSkip
-                this->loops++;
+                loops++;
             }
             //This is basically the percentage between frames we currently are
-            this->interpolation = static_cast<float>( this->now + this->singleFrameTimeInMS - this->nextFrameTime )
-                / static_cast<float>( this->singleFrameTimeInMS );
+            interpolation = static_cast<float>( now + singleFrameTimeInMS - nextFrameTime )
+                / static_cast<float>( singleFrameTimeInMS );
 
             //convert that percentage to an integer to make it easy to test
-            int ip = static_cast<int>(this->interpolation * 100);
+            int ip = static_cast<int>(interpolation * 100);
 
             if (ip < 10)
                 ip = 0;
@@ -132,22 +132,22 @@ private:
             //Check against previous interpolation so we don't render
             //the same thing more than once
             //Play around with these to find an ideal interpolation
-            if ( (this->intpolSpeed == "slow" || this->intpolSpeed == "off") &&
-                (ip != this->prevIntpol && (ip == 0 || ip == 50)) )
+            if ( (intpolSpeed == "slow" || intpolSpeed == "off") &&
+                (ip != prevIntpol && (ip == 0 || ip == 50)) )
             {
-                if (ip == 50 && this->intpolSpeed == "off")
-                    this->prevIntpol = ip;
+                if (ip == 50 && intpolSpeed == "off")
+                    prevIntpol = ip;
                 else
-                    this->intAndDraw(ip);
+                    intAndDraw(ip);
             }
-            else if ( (this->intpolSpeed == "medium") &&
-                (ip != this->prevIntpol && (ip == 0 || ip == 25 || ip == 50 || ip == 75)) )
+            else if ( (intpolSpeed == "medium") &&
+                (ip != prevIntpol && (ip == 0 || ip == 25 || ip == 50 || ip == 75)) )
             {
-                this->intAndDraw(ip);
+                intAndDraw(ip);
             }
             else if (intpolSpeed == "fast")
             {
-                this->intAndDraw(ip);
+                intAndDraw(ip);
             }
         }
         return *this;
@@ -155,10 +155,10 @@ private:
 
 public:
     GameLoop(const uint& ups=60, const std::string& speed="medium"){
-        this->setUPS(ups);
+        setUPS(ups);
 
         if (speed == "off" || speed == "slow" || speed == "medium" || speed == "fast")
-            this->intpolSpeed = speed;
+            intpolSpeed = speed;
 
     }   
     virtual ~GameLoop(){}
@@ -172,16 +172,16 @@ public:
     bool isRunning = true;
 
     auto& start(){
-        this->init()
+        init()
             .mainLoop();
 
         return *this;
     }
     auto& start(SDLWindow& sdlWin){
         if (sdlWin.win != NULL)
-            this->win = sdlWin.win;
+            win = sdlWin.win;
 
-        this->start();
+        start();
 
         return *this;
     }
@@ -191,21 +191,21 @@ public:
     }
     virtual GameLoop& secondTimer(){
     	// This function is called every second
-    	this->consoleOutput();
+    	consoleOutput();
     	return *this;
     }
     virtual GameLoop& consoleOutput(){
         //To show what is happening in the terminal
         //shows the number of times our interpolated 
         //objects have been drawn, this is called every second
-        if (this->isFirstRun)
+        if (isFirstRun)
         {
             std::cout << "Time Passed\tFrames Drawn\tFrame Skipped\n";
-            this->isFirstRun = false;
+            isFirstRun = false;
         }
 
-        std::cout << this->now/1000 << "\t\t" << this->drawCount << "\t\t" << this->loops << "\n";
-        this->drawCount = 0;
+        std::cout << now/1000 << "\t\t" << drawCount << "\t\t" << loops << "\n";
+        drawCount = 0;
 
         return *this;
     }
