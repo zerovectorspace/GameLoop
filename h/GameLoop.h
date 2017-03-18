@@ -3,7 +3,6 @@
 
 #include <SDL2/SDL.h>
 #include <iostream>
-#include <array>
 #include <string>
 #include <cstdint>
 
@@ -14,6 +13,7 @@ class GameLoop{
 public:
     SDL_Event e;
     SDL_Window* win = nullptr;
+    SDL_Renderer* rend = nullptr;
 
     // time_now_ms will wrap after 49 days of uptime
     u_int32 time_now_ms = 0;
@@ -45,6 +45,7 @@ private:
     bool is_first_run = true;
 
 public:
+
     /**
      * Constructor
      * @param target_frames_per_second
@@ -66,6 +67,9 @@ public:
     {
         if (sdlWin.win != nullptr)
             win = sdlWin.win;
+
+        if (sdlWin.rend != nullptr)
+            rend = sdlWin.rend;
 
         init();
         mainLoop();
@@ -102,9 +106,10 @@ public:
 
     virtual void collisions() {}
 
-    virtual void update_positions() {}
+    virtual void update_positions(const float& delta) {}
 
-    virtual void interpolate(float delta) {}
+    virtual void interpolate(const float& delta, const float& interpolation)
+    {}
 
     virtual void draw() {}
 
@@ -163,7 +168,7 @@ private:
      */
     void calc_delta_time()
     {
-    	delta_time = static_cast<float>(time_now_ms - prev_frame_time) / 1000.0f;
+    	delta_time = (time_now_ms - prev_frame_time) / 1000.0f;
     }
 
     /**
@@ -171,8 +176,7 @@ private:
      */
     void interpolate_and_draw()
     {
-        calc_delta_time();
-        interpolate(delta_time);
+        interpolate(delta_time, interpolation);
         draw();
 
         draw_count++;
@@ -256,7 +260,8 @@ private:
 
             while( time_now_ms > next_frame_time && frame_skips < max_frame_skip)
             {
-                update_positions();
+                calc_delta_time();
+                update_positions(delta_time);
                 collisions();
 
                 next_frame_time += single_frame_time_in_ms;
