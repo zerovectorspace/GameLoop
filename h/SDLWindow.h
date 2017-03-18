@@ -8,9 +8,8 @@
 class SDLWindow{
 public:
     SDL_Window* win = nullptr;
-
-private:
     SDL_Renderer* rend = nullptr;
+private:
     SDL_GLContext glContext = nullptr;
 
 public:
