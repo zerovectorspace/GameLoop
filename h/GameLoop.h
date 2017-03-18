@@ -3,45 +3,133 @@
 
 #include <SDL2/SDL.h>
 #include <iostream>
+#include <array>
 #include <string>
+#include <cstdint>
+
+using u_int32 = std::uint_fast32_t;
+using String = std::string;
 
 class GameLoop{
+public:
+    SDL_Event e;
+    SDL_Window* win = nullptr;
+
+    // time_now_ms will wrap after 49 days of uptime
+    u_int32 time_now_ms = 0;
+    bool is_running = true;
+
+    enum INTERPOLATIONS
+    {
+        ONE, TWO, THREE, FOUR
+    };
+
 private:
-    int updatesPerSecond = 60;
-    int singleFrameTimeInMS = 0;
-    const int maxFrameSkip = 5;
-    int loops = 0; 
+    u_int32 frames_per_second = 60;
+    u_int32 single_frame_time_in_ms = 0;
+    u_int32 max_frame_skip = 5;
+    u_int32 frame_skips = 0;
 
-    Uint32 nextFrameTime = 0;
-    Uint32 prevFrameTime = 0;
+    u_int32 next_frame_time = 0;
+    u_int32 prev_frame_time = 0;
 
-    std::string intpolSpeed = "medium";
-    int prevIntpol = -1;
+    float interpolation = 0.0;
+    float delta_time = 0.0;
 
-    Uint32 oneSecond = 0;
-    Uint32 drawCount = 0;
+    INTERPOLATIONS ip_speed = INTERPOLATIONS::ONE;
+    bool ip_flags[4] = {false, false, false, false};
 
-    bool isFirstRun = true;
+    u_int32 tick_s = 0;
+    u_int32 draw_count = 0;
 
-    
-    auto& setUPS(const uint& u){
-        if (u > 0 && u <= 240)
-        {
-            updatesPerSecond = u;
-            
-            if (u % 2 == 0)
-                updatesPerSecond--;
+    bool is_first_run = true;
 
-            singleFrameTimeInMS = static_cast<int>(1000 / updatesPerSecond);
-        }
-        return *this;
+public:
+    /**
+     * Constructor
+     * @param target_frames_per_second
+     * @param interpolations_per_frame
+     */
+    GameLoop(const u_int32& target_frames_per_second,
+            const INTERPOLATIONS& interpolations_per_frame)
+    {
+        set_time_partitions(target_frames_per_second);
+        ip_speed = interpolations_per_frame;
     }
-    auto& checkForQuit(){
+
+    virtual ~GameLoop() {}
+
+    /**
+     * Bootstrap the engine
+     */
+    void start(const SDLWindow& sdlWin)
+    {
+        if (sdlWin.win != nullptr)
+            win = sdlWin.win;
+
+        init();
+        mainLoop();
+    }
+
+    virtual void init() {}
+
+    /**
+     * A one second tick
+     */
+    virtual void second_tick()
+    {
+        console_output();
+    }
+
+    /**
+     * Send time partition information to stdout
+     */
+    virtual void console_output()
+    {
+        if (is_first_run)
+        {
+            std::cout << "Time Passed\tFrames Drawn\tFrames Skipped\n";
+            is_first_run = false;
+        }
+
+        std::cout << time_now_ms/1000 <<
+            "\t\t" << draw_count << "\t\t" << frame_skips << "\n";
+
+        draw_count = 0;
+    }
+
+    virtual void inputs(SDL_Event& e) {}
+
+    virtual void collisions() {}
+
+    virtual void update_positions() {}
+
+    virtual void interpolate(float delta) {}
+
+    virtual void draw() {}
+
+private:
+
+    /**
+     * Calculate correct time between frames
+     * @param u
+     */
+    void set_time_partitions(const u_int32& u)
+    {
+        frames_per_second = u <= 0 ? 0 : u >= 240 ? 240 : u;
+        single_frame_time_in_ms = static_cast<int>(1000 / frames_per_second);
+    }
+
+    /**
+     * Handle quit and focus events
+     */
+    void check_for_quit()
+    {
         switch (e.type)
         {
             case SDL_QUIT:
             {
-                isRunning = false;
+                is_running = false;
                 break;
             }
             case SDL_WINDOWEVENT:
@@ -56,175 +144,140 @@ private:
                 break;
             }
         }
-        return *this;
     }
-    auto& secondTimerMaster(){
-        // If one second has passed
-        if (now > oneSecond + 1000)
+
+    /**
+     * Create one second tick then call virtual second_timer
+     */
+    void calc_second_timer()
+    {
+        if (time_now_ms >= tick_s + 1000)
         {
-            secondTimer();
-            oneSecond = now;
+            second_tick();
+            tick_s = time_now_ms;
         }
-    	return *this;
     }
-    auto& calcDeltaTime()
+
+    /**
+     * Calculate the time difference between frames
+     */
+    void calc_delta_time()
     {
-    	// a way to allow us to specify the velocity of our 
-    	//objects in pixels per second. This keeps the animation distance
-    	//constant when the frame rate changes
-    	deltaTime = static_cast<float>((now - prevFrameTime) / 1000.0f);
-    	return *this;
+    	delta_time = static_cast<float>(time_now_ms - prev_frame_time) / 1000.0f;
     }
-    auto& intAndDraw(const int& i)
+
+    /**
+     * Call virtual interpolate and raw functions
+     */
+    void interpolate_and_draw()
     {
-        calcDeltaTime()
-        	.interpolate()
-            .draw();
-        prevIntpol = i;
-        drawCount++;
-        return *this;
+        calc_delta_time();
+        interpolate(delta_time);
+        draw();
+
+        draw_count++;
     }
-    auto& mainLoop()
+
+    /**
+     * Partition each frame for interpolation
+     */
+    void interpolate_clamp()
     {
-        //Start the loop while isRunning is true
-        while (isRunning)
+        bool draw = false;
+
+        if (!ip_flags[0] && interpolation >= 0.0f)
         {
-            now = SDL_GetTicks();
-            //This function holds our input handling
-            //We can also put this above the updatePositions() call
-            //But that slows down the inputs.
+            ip_flags[0] = true;
+            draw = true;
+        }
+        else if (ip_speed == INTERPOLATIONS::TWO)
+        {
+            if (!ip_flags[1] && interpolation >= 0.50f)
+            {
+                ip_flags[1] = true;
+                draw = true;
+            }
+        }
+        else if (ip_speed == INTERPOLATIONS::THREE)
+        {
+            if (!ip_flags[1] && interpolation >= 0.33f)
+            {
+                ip_flags[1] = true;
+                draw = true;
+            }
+            else if (!ip_flags[2] && interpolation >= 0.66f)
+            {
+                ip_flags[2] = true;
+                draw = true;
+            }
+        }
+        else if (ip_speed == INTERPOLATIONS::FOUR)
+        {
+            if (!ip_flags[1] && interpolation >= 0.25f)
+            {
+                ip_flags[1] = true;
+                draw = true;
+            }
+            else if (!ip_flags[2] && interpolation >= 0.50f)
+            {
+                ip_flags[2] = true;
+                draw = true;
+            }
+            else if (!ip_flags[3] && interpolation >= 0.75f)
+            {
+                ip_flags[3] = true;
+                draw = true;
+            }
+        }
+
+        if (draw)
+            interpolate_and_draw();
+    }
+
+    /**
+     * Main thread
+     *   Run events as fast as the loop runs
+     *   Call virtual collision and position functions
+     *      Frame skip if CPU can't keep up
+     */
+    void mainLoop()
+    {
+        while (is_running)
+        {
+            time_now_ms = SDL_GetTicks();
+
             while (SDL_PollEvent(&e))
             {
-                checkForQuit()
-                    .inputs();
+                check_for_quit();
+                inputs(e);
             }
 
-            //loops is the number of time we have skipped frames
-            loops = 0;
-            //This loop determines when to update the position
-            //This is how we separate the drawing and the position updating
-            while( now > nextFrameTime && loops < maxFrameSkip) 
-            {
-                //Finally update the position of our objects
-                calcDeltaTime()
-                	.updatePositions()
-                	.collisions()
-                	.secondTimerMaster();
+            frame_skips = 0;
 
-                //nextFrameTime is the time in MS we need to pass to update
-                nextFrameTime += singleFrameTimeInMS;
-                //This is the time right now
-                prevFrameTime = now;
-                //If we are stuck here because the frame rate slows we need to
-                //break out if loops is > maxFrameSkip
-                loops++;
-            }
-            //This is basically the percentage between frames we currently are
-            interpolation = static_cast<float>( now + singleFrameTimeInMS - nextFrameTime )
-                / static_cast<float>( singleFrameTimeInMS );
+            while( time_now_ms > next_frame_time && frame_skips < max_frame_skip)
+            {
+                update_positions();
+                collisions();
 
-            //convert that percentage to an integer to make it easy to test
-            int ip = static_cast<int>(interpolation * 100);
+                next_frame_time += single_frame_time_in_ms;
 
-            if (ip < 10)
-                ip = 0;
-            //Finally we can draw if the following tests have passed
-            //Check against previous interpolation so we don't render
-            //the same thing more than once
-            //Play around with these to find an ideal interpolation
-            if ( (intpolSpeed == "slow" || intpolSpeed == "off") &&
-                (ip != prevIntpol && (ip == 0 || ip == 50)) )
-            {
-                if (ip == 50 && intpolSpeed == "off")
-                    prevIntpol = ip;
-                else
-                    intAndDraw(ip);
+                prev_frame_time = time_now_ms;
+
+                ip_flags[0] = ip_flags[1] = ip_flags[2] = ip_flags[3] = false;
+
+                frame_skips++;
             }
-            else if ( (intpolSpeed == "medium") &&
-                (ip != prevIntpol && (ip == 0 || ip == 25 || ip == 50 || ip == 75)) )
-            {
-                intAndDraw(ip);
-            }
-            else if (intpolSpeed == "fast")
-            {
-                intAndDraw(ip);
-            }
+
+            interpolation =
+                static_cast<float>( time_now_ms +
+                        single_frame_time_in_ms -
+                        next_frame_time ) /
+                static_cast<float>( single_frame_time_in_ms );
+
+            interpolate_clamp();
+            calc_second_timer();
         }
-        return *this;
-    }
-
-public:
-    GameLoop(const uint& ups=60, const std::string& speed="medium"){
-        setUPS(ups);
-
-        if (speed == "off" || speed == "slow" || speed == "medium" || speed == "fast")
-            intpolSpeed = speed;
-
-    }   
-    virtual ~GameLoop(){}
-    
-    SDL_Event e;
-    SDL_Window* win = NULL;
-
-    Uint32 now = 0;
-    float deltaTime = 0.0;
-    float interpolation = 0.0;
-    bool isRunning = true;
-
-    auto& start(){
-        init()
-            .mainLoop();
-
-        return *this;
-    }
-    auto& start(SDLWindow& sdlWin){
-        if (sdlWin.win != NULL)
-            win = sdlWin.win;
-
-        start();
-
-        return *this;
-    }
-    
-    virtual GameLoop& init(){
-        return *this;
-    }
-    virtual GameLoop& secondTimer(){
-    	// This function is called every second
-    	consoleOutput();
-    	return *this;
-    }
-    virtual GameLoop& consoleOutput(){
-        //To show what is happening in the terminal
-        //shows the number of times our interpolated 
-        //objects have been drawn, this is called every second
-        if (isFirstRun)
-        {
-            std::cout << "Time Passed\tFrames Drawn\tFrame Skipped\n";
-            isFirstRun = false;
-        }
-
-        std::cout << now/1000 << "\t\t" << drawCount << "\t\t" << loops << "\n";
-        drawCount = 0;
-
-        return *this;
-    }
-    virtual GameLoop& inputs(){
-        return *this;
-    }
-    virtual GameLoop& collisions(){
-        return *this;
-    }
-    virtual GameLoop& updatePositions(){
-        return *this;
-    }
-    virtual GameLoop& interpolate(){
-        return *this;
-    }
-    virtual GameLoop& draw(){
-        return *this;
     }
 };
-
 
 #endif
