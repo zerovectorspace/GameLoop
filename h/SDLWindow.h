@@ -13,21 +13,23 @@ private:
     SDL_GLContext glContext = nullptr;
 
 public:
-    SDLWindow(const std::string& n = "Game Loop",
-            const uint& w = 800,
-            const uint& h = 600,
-            const int& o = SDL_WINDOW_SHOWN)
+    SDLWindow(
+        const std::string& n = "Game Loop",
+        const uint& w = 800,
+        const uint& h = 600,
+        const Uint32& o = SDL_WINDOW_SHOWN,
+        const Uint32& r_o = SDL_RENDERER_ACCELERATED)
     {
         if (initSDL())
             initWindow(n, w, h, o)
-                .initRenderer();
+                .initRenderer(r_o);
     }
 
     ~SDLWindow()
     {
         if (glContext != nullptr)
             SDL_GL_DeleteContext(glContext);
-        
+
         SDL_DestroyRenderer(rend);
         SDL_DestroyWindow(win);
         SDL_Quit();
@@ -45,10 +47,10 @@ private:
         return true;
     }
 
-    SDLWindow& initWindow(const std::string& name, 
-        const uint& width, 
-        const uint& height, 
-        const int& opts)
+    SDLWindow& initWindow(const std::string& name,
+        const Uint32& width,
+        const Uint32& height,
+        const Uint32& opts)
     {
         win = SDL_CreateWindow((const char*)name.c_str(),
             SDL_WINDOWPOS_CENTERED,
@@ -66,10 +68,10 @@ private:
         return *this;
     }
 
-    SDLWindow& initRenderer()
+    SDLWindow& initRenderer(const Uint32& opts)
     {
         rend = SDL_CreateRenderer(win, -1,
-                SDL_RENDERER_ACCELERATED);
+                opts);
 
         if (rend == nullptr)
             std::cout << "Could not create Renderer\n" << SDL_GetError() << "\n";
