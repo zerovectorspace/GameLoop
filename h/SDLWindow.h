@@ -70,7 +70,7 @@ private:
     SDLWindow& initRenderer()
     {
         rend = SDL_CreateRenderer(win, -1,
-                SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
+                SDL_RENDERER_ACCELERATED);
 
         if (rend == nullptr)
             std::cout << "Could not create Renderer\n" << SDL_GetError() << "\n";
