@@ -5,7 +5,7 @@
 #include <iostream>
 #include <string>
 #include <cstdint>
-
+#include <bitset>
 
 class GameLoop{
     using u_int32 = std::uint_fast32_t;
@@ -38,7 +38,7 @@ private:
     float delta_time = 0.0;
 
     INTERPOLATIONS ip_speed = INTERPOLATIONS::ONE;
-    bool ip_flags[4] = {false, false, false, false};
+    std::bitset<4> ip_flagss{0};
 
     u_int32 tick_s = 0;
     u_int32 draw_count = 0;
@@ -227,47 +227,47 @@ private:
                     next_frame_time ) /
             static_cast<float>( single_frame_time_in_ms );
 
-        if (!ip_flags[0] && interpolation >= 0.0f)
+        if (!ip_flagss.test(0) && interpolation >= 0.0f)
         {
-            ip_flags[0] = true;
+            ip_flagss.flip(0);
             draw = true;
         }
         else if (ip_speed == INTERPOLATIONS::TWO)
         {
-            if (!ip_flags[1] && interpolation >= 0.50f)
+            if (!ip_flagss.test(1) && interpolation >= 0.50f)
             {
-                ip_flags[1] = true;
+                ip_flagss.flip(1);
                 draw = true;
             }
         }
         else if (ip_speed == INTERPOLATIONS::THREE)
         {
-            if (!ip_flags[1] && interpolation >= 0.33f)
+            if (!ip_flagss.test(1) && interpolation >= 0.33f)
             {
-                ip_flags[1] = true;
+                ip_flagss.flip(1);
                 draw = true;
             }
-            else if (!ip_flags[2] && interpolation >= 0.66f)
+            else if (!ip_flagss.test(2) && interpolation >= 0.66f)
             {
-                ip_flags[2] = true;
+                ip_flagss.flip(2);
                 draw = true;
             }
         }
         else if (ip_speed == INTERPOLATIONS::FOUR)
         {
-            if (!ip_flags[1] && interpolation >= 0.25f)
+            if (!ip_flagss.test(1) && interpolation >= 0.25f)
             {
-                ip_flags[1] = true;
+                ip_flagss.flip(1);
                 draw = true;
             }
-            else if (!ip_flags[2] && interpolation >= 0.50f)
+            else if (!ip_flagss.test(2) && interpolation >= 0.50f)
             {
-                ip_flags[2] = true;
+                ip_flagss.flip(2);
                 draw = true;
             }
-            else if (!ip_flags[3] && interpolation >= 0.75f)
+            else if (!ip_flagss.test(3) && interpolation >= 0.75f)
             {
-                ip_flags[3] = true;
+                ip_flagss.flip(3);
                 draw = true;
             }
         }
@@ -306,7 +306,7 @@ private:
 
                 prev_frame_time = time_now_ms;
 
-                ip_flags[0] = ip_flags[1] = ip_flags[2] = ip_flags[3] = false;
+                ip_flagss.reset();
 
                 frame_skips++;
                 update_count++;
