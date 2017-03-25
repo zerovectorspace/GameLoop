@@ -4,8 +4,12 @@
 #include <SDL2/SDL.h>
 #include <iostream>
 #include <string>
+#include <cstdint>
 
 class SDLWindow{
+    using u_int32 = std::uint_fast32_t;
+    using String = std::string;
+
 public:
     SDL_Window* win = nullptr;
     SDL_Renderer* rend = nullptr;
@@ -15,11 +19,11 @@ private:
 
 public:
     SDLWindow(
-        const std::string& n = "Game Loop",
-        const uint& w = 800,
-        const uint& h = 600,
-        const Uint32& o = SDL_WINDOW_SHOWN,
-        const Uint32& r_o = SDL_RENDERER_ACCELERATED)
+        const String& n = "Game Loop",
+        const u_int32& w = 800,
+        const u_int32& h = 600,
+        const u_int32& o = SDL_WINDOW_SHOWN,
+        const u_int32& r_o = SDL_RENDERER_ACCELERATED)
     {
         if (initSDL())
         {
@@ -52,10 +56,10 @@ private:
         return true;
     }
 
-    SDLWindow& initWindow(const std::string& name,
-        const Uint32& width,
-        const Uint32& height,
-        const Uint32& opts)
+    SDLWindow& initWindow(const String& name,
+        const u_int32& width,
+        const u_int32& height,
+        const u_int32& opts)
     {
         win = SDL_CreateWindow((const char*)name.c_str(),
             SDL_WINDOWPOS_CENTERED,
@@ -81,7 +85,7 @@ private:
         return *this;
     }
 
-    SDLWindow& initRenderer(const Uint32& opts)
+    SDLWindow& initRenderer(const u_int32& opts)
     {
         rend = SDL_CreateRenderer(win, -1,
                 opts);

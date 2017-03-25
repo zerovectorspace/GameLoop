@@ -6,10 +6,11 @@
 #include <string>
 #include <cstdint>
 
-using u_int32 = std::uint_fast32_t;
-using String = std::string;
 
 class GameLoop{
+    using u_int32 = std::uint_fast32_t;
+    using String = std::string;
+
 public:
     SDL_Event e;
     SDL_Window* win = nullptr;
