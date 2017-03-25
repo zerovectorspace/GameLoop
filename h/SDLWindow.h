@@ -9,6 +9,7 @@ class SDLWindow{
 public:
     SDL_Window* win = nullptr;
     SDL_Renderer* rend = nullptr;
+
 private:
     SDL_GLContext glContext = nullptr;
 
@@ -21,8 +22,12 @@ public:
         const Uint32& r_o = SDL_RENDERER_ACCELERATED)
     {
         if (initSDL())
-            initWindow(n, w, h, o)
-                .initRenderer(r_o);
+        {
+            initWindow(n, w, h, o);
+
+            if ((o & SDL_WINDOW_OPENGL) == 0)
+                initRenderer(r_o);
+        }
     }
 
     ~SDLWindow()
@@ -63,7 +68,15 @@ private:
             std::cout << "Could not create Window\n" << SDL_GetError() << "\n";
 
         if ((opts & SDL_WINDOW_OPENGL) == SDL_WINDOW_OPENGL)
+        {
+            SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
+            SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 4);
+            SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 3);
+
             glContext = SDL_GL_CreateContext(win);
+
+            SDL_GL_SetSwapInterval(0);
+        }
 
         return *this;
     }

@@ -11,13 +11,12 @@ class myGameLoop :
     public GameLoop
 {
     using GameLoop::GameLoop;
-private:
 
+private:
     Events event_map;
 
     Rectangle green;
     Rectangle blue;
-
 
 public:
     void init() override
@@ -43,6 +42,10 @@ public:
     void inputs(SDL_Event& events) override
     {
         event_map.run(events);
+
+        if (events.type == SDL_KEYDOWN &&
+                events.key.keysym.sym == SDLK_SPACE)
+            toggle_pause();
     }
 
     void update_positions(const float& delta) override
