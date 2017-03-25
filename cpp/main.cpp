@@ -2,6 +2,7 @@
 #include "../h/GameLoop.h"
 #include "../h/Events.h"
 #include "../h/Rectangle.h"
+#include "../h/Settings.h"
 
 //#include <GL/glew.h>
 //#include <glm/glm.hpp>
@@ -81,16 +82,24 @@ public:
 
 int main (int argc, char* argv[])
 {
+    Settings opts;
+    opts.build();
+
     SDLWindow win(
         "My Game",
-        800, 600,
+        std::stoi(opts.get("window_width")),
+        std::stoi(opts.get("window_height")),
         SDL_WINDOW_SHOWN,
         SDL_RENDERER_ACCELERATED);
 
     //glewExperimental = GL_TRUE;
     //glewInit();
 
-    myGameLoop myGame(15, myGameLoop::INTERPOLATIONS::FOUR);
+    myGameLoop myGame(
+            std::stoi(opts.get("target_fps")),
+            static_cast<GameLoop::INTERPOLATIONS>(
+                std::stoi(opts.get("frame_partitions")))
+    );
 
     myGame.start(win);
 

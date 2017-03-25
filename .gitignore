@@ -1,3 +1,4 @@
 bazel*
 tools/
 .idea
+conf/Settings.conf
