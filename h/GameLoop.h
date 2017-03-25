@@ -20,9 +20,9 @@ public:
     u_int32 time_now_ms = 0;
     bool is_running = true;
 
-    enum INTERPOLATIONS
+    enum INTERPOLATIONS : int
     {
-        ONE, TWO, THREE, FOUR
+        ONE = 1, TWO, THREE, FOUR
     };
 
 private:
@@ -221,6 +221,12 @@ private:
     {
         bool draw = false;
 
+        interpolation =
+            static_cast<float>( time_now_ms +
+                    single_frame_time_in_ms -
+                    next_frame_time ) /
+            static_cast<float>( single_frame_time_in_ms );
+
         if (!ip_flags[0] && interpolation >= 0.0f)
         {
             ip_flags[0] = true;
@@ -306,11 +312,6 @@ private:
                 update_count++;
             }
 
-            interpolation =
-                static_cast<float>( time_now_ms +
-                        single_frame_time_in_ms -
-                        next_frame_time ) /
-                static_cast<float>( single_frame_time_in_ms );
 
             partition_frame();
             calc_second_timer();
