@@ -172,8 +172,6 @@ private:
                     Uint32 type = e.type;
                     Uint32 win_event = SDL_WINDOWEVENT_FOCUS_GAINED;
 
-                    SDL_WaitEvent(&ev);
-
                     while (!(ev.type == type && ev.window.event == win_event))
                         SDL_WaitEvent(&ev);
 
