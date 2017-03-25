@@ -88,9 +88,7 @@ public:
         while (!(e.type == type && e.key.keysym.scancode == code))
             SDL_WaitEvent(&e);
 
-        time_now_ms = SDL_GetTicks();
-        next_frame_time = time_now_ms + single_frame_time_in_ms;
-        prev_frame_time = time_now_ms;
+        reset_timers();
     }
 
     virtual void init() {}
@@ -137,6 +135,12 @@ public:
     virtual void draw() {}
 
 private:
+    void reset_timers()
+    {
+        time_now_ms = SDL_GetTicks();
+        next_frame_time = time_now_ms + single_frame_time_in_ms;
+        prev_frame_time = time_now_ms;
+    }
 
     /**
      * Calculate correct time between frames
@@ -164,10 +168,16 @@ private:
             {
                 if (e.window.event == SDL_WINDOWEVENT_FOCUS_LOST)
                 {
-                    SDL_Event f;
-                    f.type = SDL_WINDOWEVENT;
-                    f.window.event = SDL_WINDOWEVENT_FOCUS_GAINED;
-                    SDL_WaitEvent(&f);
+                    SDL_Event ev;
+                    Uint32 type = e.type;
+                    Uint32 win_event = SDL_WINDOWEVENT_FOCUS_GAINED;
+
+                    SDL_WaitEvent(&ev);
+
+                    while (!(ev.type == type && ev.window.event == win_event))
+                        SDL_WaitEvent(&ev);
+
+                    reset_timers();
                 }
                 break;
             }
